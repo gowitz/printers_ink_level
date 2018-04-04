@@ -1,0 +1,15 @@
+CREATE TABLE `ink_logs` ( 
+  `printer` TEXT NOT NULL,
+  `l_pk` INTEGER,
+  `l_g` INTEGER,
+  `l_mk` INTEGER,
+  `l_c` INTEGER,
+  `l_m` INTEGER,
+  `l_y` INTEGER,
+  `c_pk` INTEGER,
+  `c_g` INTEGER,
+  `c_mk` INTEGER,
+  `c_c` INTEGER,
+  `c_m` INTEGER,
+  `c_y` INTEGER,
+  `rec_time` TEXT DEFAULT CURRENT_TIMESTAMP );
