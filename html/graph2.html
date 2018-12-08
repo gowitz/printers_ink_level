@@ -1,0 +1,116 @@
+<!doctype html>
+<html>
+
+<head>
+	<title>Line Chart</title>
+	<meta charset="utf-8" />
+	<script src="moment.js"></script>
+	<script src="chart.js"></script>
+	<script src="utils.js"></script>
+	<style>
+		canvas {
+			-moz-user-select: none;
+			-webkit-user-select: none;
+			-ms-user-select: none;
+		}
+	</style>
+</head>
+
+<body>
+	<div style="width:1000px">
+		<canvas id="chart1"></canvas>
+	</div>
+	<script>
+		function randomNumber(min, max) {
+			return Math.random() * (max - min) + min;
+		}
+
+		function randomBar(date, lastClose) {
+			var open = randomNumber(lastClose * 0.95, lastClose * 1.05);
+			var close = randomNumber(open * 0.95, open * 1.05);
+			return {
+				t: date.valueOf(),
+				y: close
+			};
+		}
+
+		var dateFormat = 'DD.MM.YYYY';
+		var date = moment('01.04.2017', dateFormat);
+		var data = [randomBar(date, 30)];
+		console.log(date);
+		var labels = [date];
+		while (data.length < 60) {
+			date = date.clone().add(1, 'd');
+			if (date.isoWeekday() <= 5) {
+				data.push(randomBar(date, data[data.length - 1].y));
+				labels.push(date);
+			}
+		}
+
+		var ctx = document.getElementById('chart1').getContext('2d');
+		ctx.canvas.width = 1000;
+		ctx.canvas.height = 300;
+
+		var color = Chart.helpers.color;
+		var cfg = {
+			type: 'line',
+			data: {
+				labels: labels,
+				datasets: [{
+					label: 'Cyan',
+					backgroundColor: 'rgba(0, 255, 255, 1)',
+					borderColor:  'rgba(0, 255, 255, 1)' ,
+					data: data,
+					type: 'line',
+					pointRadius: 0,
+					fill: false,
+					lineTension: 0,
+					borderWidth: 2
+				}, {
+					label: 'Magenta',
+					backgroundColor: 'rgba(255, 0, 255, 1)',
+					borderColor: 'rgba(255, 0, 255, 1)',
+					data: data,
+					type: 'line',
+					pointRadius: 0,
+					fill: false,
+					lineTension: 0,
+					borderWidth: 2
+				}, {
+					label: 'Jaune',
+					backgroundColor: 'rgba(255, 225, 0, 1)',
+					borderColor: 'rgba(255, 225, 0, 1)',
+					data: data,
+					type: 'line',
+					pointRadius: 0,
+					fill: false,
+					lineTension: 0,
+					borderWidth: 2
+				}
+			]
+			},
+			options: {
+				scales: {
+					xAxes: [{
+						type: 'time',
+						distribution: 'series',
+						ticks: {
+							source: 'labels'
+						}
+					}],
+					yAxes: [{
+						scaleLabel: {
+							display: true,
+							labelString: 'ml'
+						}
+					}]
+				}
+			}
+		};
+		var chart = new Chart(ctx, cfg);
+//alert(data[59].t + " / " + data[59].y);
+
+	</script>
+</body>
+
+</html>
