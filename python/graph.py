@@ -10,7 +10,7 @@ yearsFmt = mdates.DateFormatter('%Y')
 # Load a numpy record array from yahoo csv data with fields date, open, close,
 # volume, adj_close from the mpl-data/example directory. The record array
 # stores the date as an np.datetime64 with a day unit ('D') in the date column.
-with cbook.get_sample_data('td3500.csv') as datafile:
+with cbook.get_sample_data('../data/td3500.csv') as datafile:
     r = np.load(datafile)['cyan_data'].view(np.recarray)
 
 fig, ax = plt.subplots()

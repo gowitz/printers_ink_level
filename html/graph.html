@@ -1,12 +1,13 @@
 <!doctype html>
 <html>
-
 <head>
 	<title>Line Chart</title>
 	<meta charset="utf-8" />
-	<script src="moment.js"></script>
-	<script src="Chart.js"></script>
-	<script src="utils.js"></script>
+	<script src="js/moment.js"></script>
+	<script src="js/chart.js"></script>
+	<script src="js/utils.js"></script>
+	<script src="js/papaparse.js"></script>
+
 	<style>
 		canvas {
 			-moz-user-select: none;
@@ -17,132 +18,141 @@
 </head>
 
 <body>
-	<div style="width:75%;">
-		<canvas id="canvas"></canvas>
+	<div style="width:1500px">
+		<canvas id="chart1"></canvas>
 	</div>
-
 	<script>
-		var timeFormat = 'DD.MM.YYYY HH:mm';
+	function parseData(file, callBack) {
+		Papa.parse(file, {
+			download: true,
+			dynamicTyping: true,
+			complete: function(results) {
+					callBack(results.data);
+			}
+		});
+	}
 
-		function newDate(days) {
-			return moment().add(days, 'd').toDate();
-		}
+		function drawChart(data) {
+			var data_cyan = [];
+			var data_magenta = [];
+			var data_yellow = [];
+			var data_black_photo = [];
+			var data_grey = [];
+			var data_black_mat = [];
+			var maxDays = 120;
+			var startingIndex = 1;
+			var arrayLength = data.length-1;
+			if (arrayLength > maxDays) {
+				startingIndex = arrayLength - maxDays;
+			}
+			var dateFormat = 'YYYY-MM-DD';
+			var date = moment(data[startingIndex][6], dateFormat);
+			var labels = [date];
+			for (var i = startingIndex; i < arrayLength; i++) {
+				date = data[i][6];
+				data_cyan.push({t: date.valueOf(), y: data[i][3]});
+				data_magenta.push({t: date.valueOf(), y: data[i][4]});
+				data_yellow.push({t: date.valueOf(), y: data[i][5]});
+				data_black_photo.push({t: date.valueOf(), y: data[i][0]});
+				data_grey.push({t: date.valueOf(), y: data[i][1]});
+				data_black_mat.push({t: date.valueOf(), y: data[i][2]});
+				labels.push(date);
+			}
 
-		function newDateString(days) {
-			return moment().add(days, 'd').format(timeFormat);
-		}
+		 var ctx = document.getElementById('chart1').getContext('2d');
+		 ctx.canvas.width = 2000;
+		 ctx.canvas.height = 500;
 
-		var color = Chart.helpers.color;
-		var config = {
+		 var color = Chart.helpers.color;
+		 var cfg = {
 			type: 'line',
 			data: {
-				labels: [ // Date Objects
-					newDate(0),
-					newDate(1),
-					newDate(2),
-					newDate(3),
-					newDate(4),
-					newDate(5),
-					newDate(6)
-				],
+				labels: labels,
 				datasets: [{
 					label: 'Cyan',
 					backgroundColor: 'rgba(0, 255, 255, 1)',
 					borderColor:  'rgba(0, 255, 255, 1)' ,
+					data: data_cyan,
+					type: 'line',
+					pointRadius: 0,
 					fill: false,
-					data: [
-						randomScalingFactor(),
-						randomScalingFactor(),
-						randomScalingFactor(),
-						randomScalingFactor(),
-						randomScalingFactor(),
-						randomScalingFactor(),
-						randomScalingFactor()
-					],
+					lineTension: 0,
+					borderWidth: 2
 				}, {
 					label: 'Magenta',
 					backgroundColor: 'rgba(255, 0, 255, 1)',
 					borderColor: 'rgba(255, 0, 255, 1)',
+					data: data_magenta,
+					type: 'line',
+					pointRadius: 0,
 					fill: false,
-					data: [
-						randomScalingFactor(),
-						randomScalingFactor(),
-						randomScalingFactor(),
-						randomScalingFactor(),
-						randomScalingFactor(),
-						randomScalingFactor(),
-						randomScalingFactor()
-					],
+					lineTension: 0,
+					borderWidth: 2
 				}, {
-					label: 'jaune',
+					label: 'Jaune',
 					backgroundColor: 'rgba(255, 225, 0, 1)',
 					borderColor: 'rgba(255, 225, 0, 1)',
+					data: data_yellow,
+					type: 'line',
+					pointRadius: 0,
 					fill: false,
-					data: [{
-						x: newDateString(0),
-						y: randomScalingFactor()
-					}, {
-						x: newDateString(5),
-						y: randomScalingFactor()
-					}, {
-						x: newDateString(7),
-						y: randomScalingFactor()
-					}, {
-						x: newDateString(15),
-						y: randomScalingFactor()
-					}],
-				}]
+					lineTension: 0,
+					borderWidth: 2
+				}, {
+					label: 'Noir photo',
+					backgroundColor: 'rgba(64, 64, 64, 1)',
+					borderColor: 'rgba(64, 64, 64, 1)',
+					data: data_black_photo,
+					type: 'line',
+					pointRadius: 0,
+					fill: false,
+					lineTension: 0,
+					borderWidth: 2
+				}, {
+					label: 'Gris',
+					backgroundColor: 'rgba(215, 215, 215, 1)',
+					borderColor: 'rgba(215, 215, 215, 1)',
+					data: data_grey,
+					type: 'line',
+					pointRadius: 0,
+					fill: false,
+					lineTension: 0,
+					borderWidth: 2
+				}, {
+					label: 'Noir mat',
+					backgroundColor: 'rgba(0, 0, 0, 1)',
+					borderColor: 'rgba(0, 0, 0, 1)',
+					data: data_black_mat,
+					type: 'line',
+					pointRadius: 0,
+					fill: false,
+					lineTension: 0,
+					borderWidth: 2
+				}
+			]
 			},
 			options: {
-				title: {
-					text: 'Chart.js Time Scale'
-				},
 				scales: {
 					xAxes: [{
 						type: 'time',
-						time: {
-							format: timeFormat,
-							// round: 'day'
-							tooltipFormat: 'll HH:mm'
-						},
-						scaleLabel: {
-							display: true,
-							labelString: 'Date'
+						distribution: 'series',
+						ticks: {
+							source: 'labels'
 						}
 					}],
 					yAxes: [{
 						scaleLabel: {
 							display: true,
-							labelString: 'value'
+							labelString: 'ml'
 						}
 					}]
-				},
+				}
 			}
 		};
+		var chart = new Chart(ctx, cfg);
 
-		window.onload = function() {
-			var ctx = document.getElementById('canvas').getContext('2d');
-			window.myLine = new Chart(ctx, config);
-
-		};
-
-		document.getElementById('randomizeData').addEventListener('click', function() {
-			config.data.datasets.forEach(function(dataset) {
-				dataset.data.forEach(function(dataObj, j) {
-					if (typeof dataObj === 'object') {
-						dataObj.y = randomScalingFactor();
-					} else {
-						dataset.data[j] = randomScalingFactor();
-					}
-				});
-			});
-
-			window.myLine.update();
-		});
-
-		var colorNames = Object.keys(window.chartColors);
-
+		}
+	parseData("data/td3500.csv", drawChart);
 	</script>
 </body>
-
 </html>
